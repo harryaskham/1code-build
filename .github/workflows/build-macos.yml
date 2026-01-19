@@ -41,16 +41,19 @@ jobs:
       - name: Build app
         run: bun run build
 
-      - name: Package macOS app
+      - name: Package macOS app (unsigned)
+        if: ${{ secrets.CSC_LINK == '' }}
         run: bun run package:mac
         env:
-          # Skip code signing if no certificate is provided
-          CSC_IDENTITY_AUTO_DISCOVERY: ${{ secrets.CSC_LINK != '' }}
-          # For signed/notarized builds, set these secrets in GitHub
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Package macOS app (signed)
+        if: ${{ secrets.CSC_LINK != '' }}
+        run: bun run package:mac
+        env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-          # Code signing certificate (base64-encoded .p12)
           CSC_LINK: ${{ secrets.CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
 
