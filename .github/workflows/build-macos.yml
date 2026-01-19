@@ -44,10 +44,13 @@ jobs:
       - name: Package macOS app
         run: bun run package:mac
         env:
+          # Skip code signing if no certificate is provided
+          CSC_IDENTITY_AUTO_DISCOVERY: ${{ secrets.CSC_LINK != '' }}
           # For signed/notarized builds, set these secrets in GitHub
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
-          # Code signing identity (optional - electron-builder will skip if not set)
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # Code signing certificate (base64-encoded .p12)
           CSC_LINK: ${{ secrets.CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
 
